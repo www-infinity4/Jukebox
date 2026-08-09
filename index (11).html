@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>1990 Alternative Rock Jukebox</title>
+    <style>
+        :root {
+            --bg-color: #121212;
+            --panel-color: #1e1e1e;
+            --accent-color: #00ffcc;
+            --text-color: #ffffff;
+            --text-secondary: #aaaaaa;
+            --track-hover: #2a2a2a;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        header h1 {
+            margin: 0 0 8px 0;
+            font-size: 2.4rem;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            color: var(--accent-color);
+            text-shadow: 0 0 10px rgba(0, 255, 204, 0.3);
+        }
+
+        header p {
+            color: var(--text-secondary);
+            margin: 0;
+            font-size: 1rem;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            max-width: 1100px;
+            gap: 25px;
+        }
+
+        @media (min-width: 768px) {
+            .container {
+                flex-direction: row;
+            }
+        }
+
+        .jukebox-panel {
+            flex: 1;
+            background-color: var(--panel-color);
+            border-radius: 16px;
+            padding: 25px;
+            box-shadow: 0 12px 32px rgba(0,0,0,0.7);
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            height: fit-content;
+            position: sticky;
+            top: 20px;
+        }
+
+        .video-container {
+            width: 100%;
+            height: 0;
+            padding-bottom: 56.25%; 
+            position: relative;
+            background: #000;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 2px solid #333;
+        }
+
+        .video-container iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        .now-playing {
+            text-align: center;
+            background: rgba(0, 0, 0, 0.4);
+            padding: 20px;
+            border-radius: 12px;
+            border-top: 3px solid var(--accent-color);
+        }
+
+        .now-playing h3 {
+            margin: 0 0 8px 0;
+            color: #ffffff;
+            font-size: 1.2rem;
+        }
+
+        .now-playing p {
+            color: var(--accent-color);
+            font-size: 0.95rem;
+            margin: 0;
+            font-weight: 500;
+        }
+
+        .playlist-panel {
+            flex: 1.4;
+            background-color: var(--panel-color);
+            border-radius: 16px;
+            padding: 25px;
+            box-shadow: 0 12px 32px rgba(0,0,0,0.7);
+            max-height: 700px;
+            overflow-y: auto;
+        }
+
+        .track-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .track-item {
+            display: flex;
+            align-items: center;
+            padding: 14px 16px;
+            border-bottom: 1px solid #2a2a2a;
+            cursor: pointer;
+            transition: all 0.2s ease-in-out;
+            border-radius: 8px;
+            margin-bottom: 6px;
+        }
+
+        .track-item:hover {
+            background-color: var(--track-hover);
+            transform: translateX(4px);
+        }
+
+        .track-item.active {
+            background-color: rgba(0, 255, 204, 0.1);
+            border: 1px solid var(--accent-color);
+        }
+
+        .track-index {
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: var(--accent-color);
+            width: 45px;
+        }
+
+        .track-info {
+            flex: 1;
+        }
+
+        .track-title {
+            font-weight: 600;
+            margin-bottom: 4px;
+            font-size: 1rem;
+        }
+
+        .track-album {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        .playlist-panel::-webkit-scrollbar {
+            width: 8px;
+        }
+        .playlist-panel::-webkit-scrollbar-track {
+            background: var(--panel-color);
+        }
+        .playlist-panel::-webkit-scrollbar-thumb {
+            background: #444;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>1990 Alt-Rock Jukebox</h1>
+        <p>Comprehensive 25-Track Alternative Anthology</p>
+    </header>
+
+    <div class="container">
+        <div class="jukebox-panel">
+            <div class="video-container">
+                <div id="player"></div>
+            </div>
+            <div class="now-playing">
+                <p id="current-album">ALBUM DATA</p>
+                <h3 id="current-title">Select any track to begin</h3>
+            </div>
+        </div>
+
+        <div class="playlist-panel">
+            <ul class="track-list" id="track-list">
+                <!-- Javascript will load 25 tracks here -->
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        const tracks = [
+            { title: "Been Caught Stealing", artist: "Jane's Addiction", album: "Ritual de lo Habitual", ytId: "Dx3YVwNre8E" }, 
+            { title: "Here's Where the Story Ends", artist: "The Sundays", album: "Reading, Writing and Arithmetic", ytId: "FHSIZ6S7Gis" },
+            { title: "Dig For Fire", artist: "Pixies", album: "Bossanova", ytId: "v3Z82mOThpE" },
+            { title: "Ball and Chain", artist: "Social Distortion", album: "Social Distortion", ytId: "_NWjehpG60E" },
+            { title: "Merry Go Round", artist: "The Replacements", album: "All Shook Down", ytId: "tO0c7e8yN-E" },
+            { title: "Soon", artist: "My Bloody Valentine", album: "Glider EP", ytId: "dBvN9XU9v_U" },
+            { title: "The Only One I Know", artist: "The Charlatans", album: "Some Friendly", ytId: "0RJwW77Lsj8" },
+            { title: "Step On", artist: "Happy Mondays", album: "Pills 'n' Thrills and Bellyaches", ytId: "6M0IdXIn6S8" },
+            { title: "Birdhouse in Your Soul", artist: "They Might Be Giants", album: "Flood", ytId: "Nhj3Z9kJ694" },
+            { title: "Enjoy the Silence", artist: "Depeche Mode", album: "Violator", ytId: "aGSKrC7dGcY" },
+            { title: "Kool Thing", artist: "Sonic Youth", album: "Goo", ytId: "SDTSVrBh6g4" },
+            { title: "Hard to Handle", artist: "The Black Crowes", album: "Shake Your Money Maker", ytId: "BRcs_OzQB14" },
+            { title: "Epic", artist: "Faith No More", album: "The Real Thing", ytId: "ERGqOhE8YS0" },
+            { title: "Stop!", artist: "Jane's Addiction", album: "Ritual de lo Habitual", ytId: "84pI6oXm8kw" },
+            { title: "Velouria", artist: "Pixies", album: "Bossanova", ytId: "tPxGAB0a0bM" },
+            { title: "I've Been Waiting", artist: "Matthew Sweet", album: "Girlfriend", ytId: "fx9b_Y7D9R4" },
+            { title: "The Ship Song", artist: "Nick Cave & The Bad Seeds", album: "The Good Son", ytId: "T0spdc_gMfQ" },
+            { title: "One Love", artist: "The Stone Roses", album: "One Love Single", ytId: "v8Lia_6A904" },
+            { title: "Clipped", artist: "Bob Mould", album: "Workbook Era", ytId: "p5b9hFas3a8" },
+            { title: "All I Want", artist: "The Lightning Seeds", album: "Cloudcuckooland", ytId: "6gI_WnCmsdI" },
+            { title: "Never Enough", artist: "The Cure", album: "Mixed Up", ytId: "mC6UasVAnZg" },
+            { title: "Groove Is in the Heart", artist: "Deee-Lite", album: "World Clique", ytId: "etviGf1uWlg" },
+            { title: "I'll Be Your Chauffeur", artist: "David J", album: "Songs from another Room", ytId: "vI84kOqN0cQ" },
+            { title: "Overtime", artist: "The Wolfgang Press", album: "Bird Wood Cage", ytId: "1Zl7Y54nQrc" },
+            { title: "Twister", artist: "Ultra Vivid Scene", album: "Joy 1967-1990", ytId: "m8E_yWJqNis" }
+        ];
+
+        let player;
+        const trackListElement = document.getElementById('track-list');
+        const currentTitleElement = document.getElementById('current-title');
+        const currentAlbumElement = document.getElementById('current-album');
+
+        const tag = document.createElement('script');
+        tag.src = "https://www.youtube.com/iframe_api";
+        const firstScriptTag = document.getElementsByTagName('script');
+        firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+
+        function populateList() {
+            trackListElement.innerHTML = '';
+            tracks.forEach((track, index) => {
+                const li = document.createElement('li');
+                li.className = 'track-item';
+                li.innerHTML = `
+                    <div class="track-index">${String(index + 1).padStart(2, '0')}</div>
+                    <div class="track-info">
+                        <div class="track-title">${track.artist} - ${track.title}</div>
+                        <div class="track-album">${track.album}</div>
+                    </div>
+                `;
+                li.addEventListener('click', () => playSelectedTrack(index));
+                trackListElement.appendChild(li);
+            });
+        }
+
+        function onYouTubeIframeAPIReady() {
+            populateList();
+            
+            player = new YT.Player('player', {
+                height: '100%',
+                width: '100%',
+                videoId: tracks[0].ytId,
+                playerVars: {
+                    'playsinline': 1,
+                    'modestbranding': 1,
+                    'rel': 0,
+                    'origin': window.location.origin
+                },
+                events: {
+                    'onStateChange': handlePlaybackCycle
+                }
+            });
+            
+            refreshMetadata(0);
+        }
+
+        function playSelectedTrack(index) {
+            const track = tracks[index];
+            player.loadVideoById(track.ytId);
+            refreshMetadata(index);
+        }
+
+        function refreshMetadata(index) {
+            document.querySelectorAll('.track-item').forEach((item, idx) => {
+                if (idx === index) item.classList.add('active');
+                else item.classList.remove('active');
+            });
+
+            const current = tracks[index];
+            currentTitleElement.textContent = `${current.artist} — ${current.title}`;
+            currentAlbumElement.textContent = `${current.album} (1990)`.toUpperCase();
+        }
+
+        function handlePlaybackCycle(event) {
+            if (event.data === YT.PlayerState.ENDED) {
+                const currentYtId = player.getVideoData().video_id;
+                const currentIndex = tracks.findIndex(t => t.ytId === currentYtId);
+                const nextIndex = (currentIndex + 1) % tracks.length;
+                playSelectedTrack(nextIndex);
+            }
+        }
+    </script>
+</body>
+</html>
